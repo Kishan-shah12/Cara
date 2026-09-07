@@ -4,6 +4,10 @@
  */
 
 export class WishlistNotesTagManager {
+var _DANGEROUS_KEYS = { __proto__: 1, constructor: 1, prototype: 1 };
+function _isSafeKey(k) { return typeof k === 'symbol' || !(k in _DANGEROUS_KEYS); }
+
+class WishlistNotesTagManager {
   constructor(storageKey = 'cara_wishlist_notes_v2') {
     this.storageKey = storageKey;
     this.data = this.loadData();
@@ -12,7 +16,12 @@ export class WishlistNotesTagManager {
   loadData() {
     try {
       const stored = localStorage.getItem(this.storageKey);
-      return stored ? JSON.parse(stored) : {};
+      const parsed = stored ? JSON.parse(stored) : {};
+      if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+      for (const key of Object.keys(parsed)) {
+        if (!_isSafeKey(key)) delete parsed[key];
+      }
+      return parsed;
     } catch (e) {
       return {};
     }
@@ -27,7 +36,7 @@ export class WishlistNotesTagManager {
   }
 
   addNote(productId, note) {
-    if (!productId || typeof note !== 'string') {
+    if (!_isSafeKey(productId) || !productId || typeof note !== 'string') {
       return { success: false, message: 'Invalid product ID or note.' };
     }
 
@@ -41,7 +50,7 @@ export class WishlistNotesTagManager {
   }
 
   addTags(productId, tags = []) {
-    if (!productId || !Array.isArray(tags)) {
+    if (!_isSafeKey(productId) || !productId || !Array.isArray(tags)) {
       return { success: false, message: 'Invalid product ID or tags.' };
     }
 
@@ -60,6 +69,9 @@ export class WishlistNotesTagManager {
   }
 
   setPriority(productId, priority) {
+    if (!_isSafeKey(productId)) {
+      return { success: false, priority: 0 };
+    }
     const validPriority = Math.max(0, Math.min(5, parseInt(priority, 10) || 0));
     if (!this.data[productId]) {
       this.data[productId] = { note: '', tags: [], priority: validPriority, addedAt: new Date().toISOString() };
