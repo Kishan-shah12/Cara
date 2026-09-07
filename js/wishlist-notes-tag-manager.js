@@ -3,11 +3,10 @@
  * Provides user notes, custom tagging, filtering, and priority ranking for wishlist items.
  */
 
-export class WishlistNotesTagManager {
 var _DANGEROUS_KEYS = { __proto__: 1, constructor: 1, prototype: 1 };
 function _isSafeKey(k) { return typeof k === 'symbol' || !(k in _DANGEROUS_KEYS); }
 
-class WishlistNotesTagManager {
+export class WishlistNotesTagManager {
   constructor(storageKey = 'cara_wishlist_notes_v2') {
     this.storageKey = storageKey;
     this.data = this.loadData();

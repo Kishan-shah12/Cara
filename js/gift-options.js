@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 export function validateGiftMessageLength(message, maxChars = 200) {
   if (!message || typeof message !== 'string') return true;
-  return message.length <= maxChars;
+  return message.trim().length <= maxChars;
 }
 
 if (typeof window !== 'undefined') {
